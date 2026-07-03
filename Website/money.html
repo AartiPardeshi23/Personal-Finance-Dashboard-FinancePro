@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinancePro - Personal Finance Tracker</title>
+    <!-- ChartJS library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+    <!-- FontAwesome icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom stylesheet -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Custom script defer loaded -->
+    <script src="app.js" defer></script>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-container">
+            <div class="logo-section">
+                <div class="logo-icon">
+                    <i class="fas fa-wallet"></i>
+                </div>
+                <div class="logo-text">
+                    <h1>FinancePro</h1>
+                    <p>Your Personal Wealth Manager</p>
+                </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <button onclick="toggleAiChatbot()" id="aiInsightsNavBtn" class="tab-btn" style="flex: 0 0 auto; min-width: auto; padding: 0.5rem 1rem; background: rgba(168, 85, 247, 0.08); color: #a855f7; font-weight: 700; border-radius: var(--radius-lg); border: 1px solid rgba(168, 85, 247, 0.15); display: flex; align-items: center; gap: 0.5rem; height: 42px;" title="AI Financial Assistant">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    <span>AI Insights</span>
+                </button>
+                <button onclick="toggleTheme()" id="themeToggleBtn" class="tab-btn" style="flex: 0 0 auto; min-width: auto; padding: 0.5rem 1rem; background: rgba(99, 102, 241, 0.08); color: var(--color-bank); font-weight: 700; border-radius: var(--radius-lg); border: 1px solid rgba(99, 102, 241, 0.15); display: flex; align-items: center; gap: 0.5rem; height: 42px;" title="Toggle Day/Night Mode">
+                    <i class="fa-solid fa-moon"></i>
+                    <span id="themeToggleLabel">Night Mode</span>
+                </button>
+                <div class="header-savings" style="margin-bottom: 0;">
+                    <i class="fas fa-piggy-bank"></i>
+                    <span id="totalSavings">₹0</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs-wrapper">
+            <nav class="nav-tabs">
+                <button class="tab-btn active" data-tab="dashboard">
+                    <i class="fas fa-house"></i>Dashboard
+                </button>
+                <button class="tab-btn" data-tab="income">
+                    <i class="fas fa-arrow-trend-up"></i>Income
+                </button>
+                <button class="tab-btn" data-tab="expenses">
+                    <i class="fas fa-arrow-trend-down"></i>Expenses
+                </button>
+                <button class="tab-btn" data-tab="investments">
+                    <i class="fas fa-chart-line"></i>Investments
+                </button>
+                <button class="tab-btn" data-tab="bank">
+                    <i class="fas fa-university"></i>Bank Accounts
+                </button>
+                <button class="tab-btn" data-tab="budget">
+                    <i class="fa-solid fa-scale-balanced"></i>Budget
+                </button>
+                <button class="tab-btn" data-tab="bills">
+                    <i class="fa-solid fa-file-invoice"></i>Bills
+                </button>
+                <button class="tab-btn" data-tab="reports">
+                    <i class="fas fa-chart-pie"></i>Reports
+                </button>
+            </nav>
+        </div>
+
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content active">
+            <div class="welcome-banner">
+                <h2>Welcome Back!</h2>
+                <p>Your financial journey starts here</p>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="grid-kpi">
+                <div class="glass-card metric-card income">
+                    <div class="metric-header">
+                        <div class="metric-icon">
+                            <i class="fas fa-arrow-up"></i>
+                        </div>
+                        <div class="metric-pulse"></div>
+                    </div>
+                    <h3 class="metric-value" id="totalIncomeVal">₹0</h3>
+                    <p class="metric-label">Total Income</p>
+                </div>
+
+                <div class="glass-card metric-card expense">
+                    <div class="metric-header">
+                        <div class="metric-icon">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <div class="metric-pulse"></div>
+                    </div>
+                    <h3 class="metric-value" id="totalExpensesVal">₹0</h3>
+                    <p class="metric-label">Total Expenses</p>
+                </div>
+
+                <div class="glass-card metric-card investment">
+                    <div class="metric-header">
+                        <div class="metric-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="metric-pulse"></div>
+                    </div>
+                    <h3 class="metric-value" id="totalInvestmentsVal">₹0</h3>
+                    <p class="metric-label">Investments</p>
+                </div>
+
+                <div class="glass-card metric-card networth">
+                    <div class="metric-header">
+                        <div class="metric-icon">
+                            <i class="fas fa-piggy-bank"></i>
+                        </div>
+                        <div class="metric-pulse"></div>
+                    </div>
+                    <h3 class="metric-value" id="netWorthVal">₹0</h3>
+                    <p class="metric-label">Net Worth</p>
+                </div>
+
+                <!-- Monthly Savings -->
+                <div class="glass-card metric-card monthly-savings">
+                    <div class="metric-header">
+                        <div class="metric-icon">
+                            <i class="fa-solid fa-wallet"></i>
+                        </div>
+                        <div class="metric-pulse"></div>
+                    </div>
+                    <h3 class="metric-value" id="monthlySavingsVal">₹0</h3>
+                    <p class="metric-label">Monthly Savings</p>
+                </div>
+
+                <!-- Emergency Fund -->
+                <div class="glass-card metric-card emergency-fund">
+                    <div class="metric-header">
+                        <div class="metric-icon">
+                            <i class="fa-solid fa-shield-halved"></i>
+                        </div>
+                        <div class="metric-pulse"></div>
+                    </div>
+                    <h3 class="metric-value" id="emergencyFundVal">₹0</h3>
+                    <p class="metric-label">Emergency Fund</p>
+                </div>
+
+                <!-- Debt -->
+                <div class="glass-card metric-card debt">
+                    <div class="metric-header">
+                        <div class="metric-icon">
+                            <i class="fa-solid fa-hand-holding-dollar"></i>
+                        </div>
+                        <div class="metric-pulse"></div>
+                    </div>
+                    <h3 class="metric-value" id="debtVal">₹0</h3>
+                    <p class="metric-label">Debt</p>
+                </div>
+
+                <!-- Investment Returns -->
+                <div class="glass-card metric-card investment-returns">
+                    <div class="metric-header">
+                        <div class="metric-icon">
+                            <i class="fa-solid fa-coins"></i>
+                        </div>
+                        <div class="metric-pulse"></div>
+                    </div>
+                    <h3 class="metric-value" id="investReturnsVal">₹0</h3>
+                    <p class="metric-label">Investment Returns</p>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="glass-card" style="margin-top: 2rem;">
+                <h3 class="section-title"><i class="fas fa-bolt"></i> Quick Actions</h3>
+                <div class="quick-actions-grid">
+                    <button class="action-btn income-action" onclick="showTab('income')">
+                        <i class="fas fa-plus"></i>
+                        Add Income
+                    </button>
+                    <button class="action-btn expense-action" onclick="showTab('expenses')">
+                        <i class="fas fa-shopping-cart"></i>
+                        Track Expense
+                    </button>
+                    <button class="action-btn investment-action" onclick="showTab('investments')">
+                        <i class="fas fa-briefcase"></i>
+                        New Investment
+                    </button>
+                    <button class="action-btn bank-action" onclick="showTab('bank')">
+                        <i class="fas fa-credit-card"></i>
+                        Update Bank
+                    </button>
+                </div>
+            </div>
+
+            <!-- Universal Transaction Ledger -->
+            <div class="glass-card" style="margin-top: 2rem;">
+                <div class="ledger-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
+                    <h3 class="section-title" style="margin-bottom: 0;"><i class="fa-solid fa-receipt"></i> Transaction History</h3>
+                    <div class="ledger-filters" style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
+                        <div class="filter-group" style="display: flex; flex-direction: column; gap: 0.25rem;">
+                            <label for="ledgerSearchText" style="font-size: 0.75rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase;">Search</label>
+                            <input type="text" id="ledgerSearchText" placeholder="Search title/category..." class="search-input" style="padding: 0.4rem 0.75rem; font-size: 0.85rem; border-radius: var(--radius-md); border: 1px solid rgba(15, 23, 42, 0.12); width: 160px; height: 35px; box-sizing: border-box;">
+                        </div>
+                        <div class="filter-group" style="display: flex; flex-direction: column; gap: 0.25rem;">
+                            <label for="ledgerStartDate" style="font-size: 0.75rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase;">From Date</label>
+                            <input type="date" id="ledgerStartDate" class="search-input" style="padding: 0.4rem 0.75rem; font-size: 0.85rem; border-radius: var(--radius-md); border: 1px solid rgba(15, 23, 42, 0.12); height: 35px; box-sizing: border-box;">
+                        </div>
+                        <div class="filter-group" style="display: flex; flex-direction: column; gap: 0.25rem;">
+                            <label for="ledgerEndDate" style="font-size: 0.75rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase;">To Date</label>
+                            <input type="date" id="ledgerEndDate" class="search-input" style="padding: 0.4rem 0.75rem; font-size: 0.85rem; border-radius: var(--radius-md); border: 1px solid rgba(15, 23, 42, 0.12); height: 35px; box-sizing: border-box;">
+                        </div>
+                        <div class="filter-group" style="display: flex; flex-direction: column; gap: 0.25rem;">
+                            <label for="ledgerType" style="font-size: 0.75rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase;">Type</label>
+                            <select id="ledgerType" style="padding: 0.4rem 0.75rem; font-size: 0.85rem; border-radius: var(--radius-md); border: 1px solid rgba(15, 23, 42, 0.12); height: 35px; box-sizing: border-box;">
+                                <option value="all">All</option>
+                                <option value="income">Income</option>
+                                <option value="expense">Expense</option>
+                            </select>
+                        </div>
+                        <button id="clearLedgerFiltersBtn" class="bank-card-btn" style="padding: 0.45rem 0.75rem; font-size: 0.8rem; margin-top: 1rem; height: 35px; display: flex; align-items: center; justify-content: center; box-sizing: border-box;">
+                            <i class="fa-solid fa-arrow-rotate-left"></i> Clear
+                        </button>
+                    </div>
+                </div>
+                <div class="list-container" id="ledgerList" style="max-height: 400px; overflow-y: auto;">
+                    <!-- Filled dynamically by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Income Tab -->
+        <div id="income" class="tab-content">
+            <div class="grid-main-side">
+                <!-- Form Card -->
+                <div class="glass-card">
+                    <h3 class="form-title">Add New Income</h3>
+                    <form id="addIncomeForm">
+                        <div class="form-group">
+                            <label for="incomeSource">Income Source / Title</label>
+                            <input type="text" id="incomeSource" placeholder="e.g. Monthly Salary, Consulting" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="incomeAmount">Amount (₹)</label>
+                            <input type="number" id="incomeAmount" placeholder="Amount in ₹" min="1" step="any" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="incomeCategory">Category</label>
+                            <select id="incomeCategory">
+                                <option value="Salary">Salary</option>
+                                <option value="Freelance">Freelance</option>
+                                <option value="Business">Business</option>
+                                <option value="Bonus">Bonus</option>
+                                <option value="Interest">Interest</option>
+                                <option value="Other">Other...</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="incomeCategoryOtherWrapper" style="display: none;">
+                            <label for="incomeCategoryOther">Custom Category</label>
+                            <input type="text" id="incomeCategoryOther" placeholder="Enter custom category">
+                        </div>
+                        <div class="form-group">
+                            <label for="incomeBank">Deposit Account</label>
+                            <select id="incomeBank" required>
+                                <!-- Populated dynamically -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="incomeDate">Date</label>
+                            <input type="date" id="incomeDate">
+                        </div>
+                        <button type="submit" class="submit-btn income-submit">
+                            <i class="fas fa-plus"></i>Add Income
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Recent transactions List -->
+                <div class="glass-card">
+                    <div class="list-header">
+                        <h3 class="section-title"><i class="fas fa-clock-rotate-left"></i> Recent Income</h3>
+                        <div class="list-actions">
+                            <input type="text" id="searchIncome" placeholder="Search income..." class="search-input">
+                        </div>
+                    </div>
+                    <div class="list-container" id="incomeList">
+                        <!-- Filled dynamically by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Expenses Tab -->
+        <div id="expenses" class="tab-content">
+            <div class="grid-main-side">
+                <!-- Form Card -->
+                <div class="glass-card">
+                    <h3 class="form-title">Log New Expense</h3>
+                    <form id="logExpenseForm">
+                        <div class="form-group">
+                            <label for="expenseTitle">Expense Description / Title</label>
+                            <input type="text" id="expenseTitle" placeholder="e.g. Pizza, Fuel refill, Rent" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="expenseAmount">Amount (₹)</label>
+                            <input type="number" id="expenseAmount" placeholder="Amount in ₹" min="1" step="any" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="expenseCategory">Category</label>
+                            <select id="expenseCategory">
+                                <option value="Food">Food</option>
+                                <option value="Rent">Rent</option>
+                                <option value="Shopping">Shopping</option>
+                                <option value="Transport">Transport</option>
+                                <option value="Bills">Bills</option>
+                                <option value="Travel">Travel</option>
+                                <option value="Entertainment">Entertainment</option>
+                                <option value="Insurance">Insurance</option>
+                                <option value="Medical">Medical</option>
+                                <option value="Other">Other...</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="expenseCategoryOtherWrapper" style="display: none;">
+                            <label for="expenseCategoryOther">Custom Category</label>
+                            <input type="text" id="expenseCategoryOther" placeholder="Enter custom category">
+                        </div>
+                        <div class="form-group">
+                            <label for="expenseBank">Payment Account</label>
+                            <select id="expenseBank" required>
+                                <!-- Populated dynamically -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="expenseDate">Date</label>
+                            <input type="date" id="expenseDate">
+                        </div>
+                        <button type="submit" class="submit-btn expense-submit">
+                            <i class="fas fa-shopping-cart"></i>Track Expense
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Expense dynamic views -->
+                <div style="display: flex; flex-direction: column; gap: 2rem;">
+                    <!-- Category summary blocks -->
+                    <div class="category-summary-grid" id="categorySummaryGrid">
+                        <!-- Populated dynamically by JavaScript -->
+                    </div>
+
+                    <!-- List Card -->
+                    <div class="glass-card">
+                        <div class="list-header">
+                            <h3 class="section-title"><i class="fas fa-clock-rotate-left"></i> Recent Expenses</h3>
+                            <div class="list-actions">
+                                <input type="text" id="searchExpense" placeholder="Search expenses..." class="search-input">
+                            </div>
+                        </div>
+                        <div class="list-container" id="expenseList">
+                            <!-- Filled dynamically by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Investments Tab -->
+        <div id="investments" class="tab-content">
+            <div class="grid-main-side">
+                <!-- Left column: New Investment Form -->
+                <div style="display: flex; flex-direction: column; gap: 2rem;">
+                    <!-- New Investment Form -->
+                    <div class="glass-card">
+                        <h3 class="form-title">New Investment</h3>
+                        <form id="newInvestmentForm">
+                            <div class="form-group">
+                                <label for="investName">Investment Name</label>
+                                <input type="text" id="investName" placeholder="e.g. Mutual Fund / Stocks" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="investType">Type</label>
+                                <select id="investType">
+                                    <option value="Mutual Fund">Mutual Fund</option>
+                                    <option value="Stocks">Stocks</option>
+                                    <option value="SIP">SIP</option>
+                                    <option value="Trading">Trading</option>
+                                    <option value="Gold">Gold</option>
+                                    <option value="FD">FD</option>
+                                    <option value="Cash">Cash</option>
+                                    <option value="Crypto">Crypto</option>
+                                    <option value="Other">Other...</option>
+                                </select>
+                            </div>
+                            <div class="form-group" id="investTypeOtherWrapper" style="display: none;">
+                                <label for="investTypeOther">Custom Type</label>
+                                <input type="text" id="investTypeOther" placeholder="Enter custom type">
+                            </div>
+                            <div class="form-group">
+                                <label for="investAmount">Invested Amount (₹)</label>
+                                <input type="number" id="investAmount" placeholder="Amount ₹" min="1" step="any" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="investReturns">Returns (%)</label>
+                                <input type="number" id="investReturns" placeholder="e.g. 15" step="0.01" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="investDate">Investment Date</label>
+                                <input type="date" id="investDate">
+                            </div>
+                            <button type="submit" class="submit-btn investment-submit">
+                                <i class="fas fa-rocket"></i>Invest Now
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Right column: Investments List + SIP Tracker + EMI Tracker -->
+                <div style="display: flex; flex-direction: column; gap: 2rem;">
+                    <!-- Investments List -->
+                    <div>
+                        <h3 class="section-title" style="margin-bottom: 1rem;"><i class="fa-solid fa-folder-open"></i> Portfolio Assets</h3>
+                        <div class="investment-list-grid" id="investmentsList">
+                            <!-- Filled dynamically by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Investment Performance Card -->
+                    <div class="glass-card">
+                        <h3 class="form-title" style="margin-bottom: 1.25rem;"><i class="fa-solid fa-chart-line"></i> Investment Performance</h3>
+                        <div style="display: flex; flex-direction: column; gap: 1rem; margin-top: 1rem;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid rgba(15,23,42,0.04);">
+                                <span class="bal-lbl" style="margin-bottom: 0;">Today's Gain</span>
+                                <div style="display: flex; align-items: center; gap: 0.4rem;">
+                                    <span style="font-weight: 800; color: var(--color-income); font-size: 1.05rem;" id="perfTodayGain">+₹0</span>
+                                    <button class="budget-edit-btn" onclick="editPerformanceMetric('todayGain', 'Today\'s Gain')" title="Edit Gain" style="padding: 0.15rem; background: transparent; color: var(--text-muted); font-size: 0.75rem; height: auto;">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid rgba(15,23,42,0.04);">
+                                <span class="bal-lbl" style="margin-bottom: 0;">This Month</span>
+                                <div style="display: flex; align-items: center; gap: 0.4rem;">
+                                    <span style="font-weight: 800; color: var(--color-income); font-size: 1.05rem;" id="perfMonthGain">+₹0</span>
+                                    <button class="budget-edit-btn" onclick="editPerformanceMetric('monthGain', 'This Month\'s Gain')" title="Edit Gain" style="padding: 0.15rem; background: transparent; color: var(--text-muted); font-size: 0.75rem; height: auto;">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid rgba(15,23,42,0.04);">
+                                <span class="bal-lbl" style="margin-bottom: 0;">This Year</span>
+                                <div style="display: flex; align-items: center; gap: 0.4rem;">
+                                    <span style="font-weight: 800; color: var(--color-income); font-size: 1.05rem;" id="perfYearGain">+₹0</span>
+                                    <button class="budget-edit-btn" onclick="editPerformanceMetric('yearGain', 'This Year\'s Gain')" title="Edit Gain" style="padding: 0.15rem; background: transparent; color: var(--text-muted); font-size: 0.75rem; height: auto;">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0;">
+                                <span class="bal-lbl" style="margin-bottom: 0;">Overall</span>
+                                <div style="display: flex; align-items: center; gap: 0.4rem;">
+                                    <span style="background: rgba(16, 185, 129, 0.08); color: var(--color-income); padding: 0.25rem 0.6rem; border-radius: var(--radius-md); font-weight: 800; font-size: 0.85rem;" id="perfOverallReturn">+0%</span>
+                                    <button class="budget-edit-btn" onclick="editPerformanceMetric('overallReturn', 'Overall Return %')" title="Edit Return %" style="padding: 0.15rem; background: transparent; color: var(--text-muted); font-size: 0.75rem; height: auto;">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SIP Tracker Card -->
+                    <div class="glass-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+                            <h3 class="section-title" style="margin-bottom: 0;"><i class="fa-solid fa-arrows-spin"></i> SIP Tracker</h3>
+                            <button onclick="addSipTracker()" class="budget-edit-btn" title="Add SIP" style="font-size: 0.85rem; padding: 0.25rem 0.5rem; background: rgba(99, 102, 241, 0.08); color: var(--color-bank); border-radius: var(--radius-sm); font-weight: 700; height: auto;">
+                                <i class="fa-solid fa-plus"></i> Add SIP
+                            </button>
+                        </div>
+                        <div id="sipTrackerList" style="display: flex; flex-direction: column; gap: 0.75rem;">
+                            <!-- Populated dynamically by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- EMI Tracker Card -->
+                    <div class="glass-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+                            <h3 class="section-title" style="margin-bottom: 0;"><i class="fa-solid fa-receipt"></i> EMI Tracker</h3>
+                            <button onclick="addEmiTracker()" class="budget-edit-btn" title="Add EMI" style="font-size: 0.85rem; padding: 0.25rem 0.5rem; background: rgba(99, 102, 241, 0.08); color: var(--color-bank); border-radius: var(--radius-sm); font-weight: 700; height: auto;">
+                                <i class="fa-solid fa-plus"></i> Add EMI
+                            </button>
+                        </div>
+                        <div id="emiTrackerList" style="display: flex; flex-direction: column; gap: 0.75rem;">
+                            <!-- Populated dynamically by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bank Accounts Tab -->
+        <div id="bank" class="tab-content">
+            <div class="grid-main-side">
+                <!-- Form Card -->
+                <div class="glass-card">
+                    <h3 class="form-title">Add Bank Account</h3>
+                    <form id="addBankForm">
+                        <div class="form-group">
+                            <label for="bankAccName">Account Name</label>
+                            <input type="text" id="bankAccName" placeholder="e.g. Personal Checking, Family Savings" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="bankNameInput">Bank Name</label>
+                            <input type="text" id="bankNameInput" placeholder="e.g. HDFC Bank, SBI, ICICI" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="bankNumber">Account Number (Last 4 digits)</label>
+                            <input type="text" id="bankNumber" placeholder="e.g. 1234" pattern="\d{4}" maxlength="4" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="bankBalance">Current Balance (₹)</label>
+                            <input type="number" id="bankBalance" placeholder="Current Balance ₹" step="any" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="bankType">Account Type</label>
+                            <select id="bankType">
+                                <option value="Savings">Savings</option>
+                                <option value="Salary">Salary</option>
+                                <option value="Checking">Checking/Current</option>
+                                <option value="Credit Card">Credit Card</option>
+                                <option value="Other">Other...</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="bankTypeOtherWrapper" style="display: none;">
+                            <label for="bankTypeOther">Custom Account Type</label>
+                            <input type="text" id="bankTypeOther" placeholder="Enter custom account type">
+                        </div>
+                        <button type="submit" class="submit-btn bank-submit">
+                            <i class="fas fa-university"></i>Add Account
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Bank Accounts Grid list -->
+                <div class="bank-cards-grid" id="bankAccountsList">
+                    <!-- Filled dynamically by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Reports Tab -->
+        <div id="reports" class="tab-content">
+            <div class="reports-layout">
+                <div class="grid-equal">
+                    <!-- Allocation Breakdown -->
+                    <div class="chart-card">
+                        <h3>Allocation Breakdown</h3>
+                        <div class="chart-container">
+                            <canvas id="financeChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Investment Allocation Card -->
+                    <div class="chart-card">
+                        <h3 style="margin-bottom: 1rem;"><i class="fa-solid fa-chart-pie"></i> Investment Allocation</h3>
+                        <div style="display: flex; flex-direction: column; gap: 1rem; align-items: center; justify-content: center; height: 100%;">
+                            <div class="chart-container" style="position: relative; width: 100%; max-width: 180px; height: 180px; display: flex; justify-content: center;">
+                                <canvas id="investAllocationChart"></canvas>
+                            </div>
+                            <div id="investAllocationLegend" style="width: 100%; display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem; font-size: 0.75rem;">
+                                <!-- Populated dynamically -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Net Worth Trend Card -->
+                <div class="chart-card" style="margin-top: 2rem; width: 100%;">
+                    <h3>Net Worth Growth Trend (12 Months)</h3>
+                    <div class="chart-container-large" style="height: 350px;">
+                        <canvas id="netWorthTrendChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="grid-equal" style="margin-top: 2rem;">
+                    <!-- Asset Tracker Card -->
+                    <div class="glass-card" style="margin-bottom: 0; height: 440px; box-sizing: border-box; display: flex; flex-direction: column; padding: 2rem;">
+                        <h3 class="section-title" style="margin-bottom: 1.5rem;"><i class="fa-solid fa-building-columns"></i> Asset Tracker</h3>
+                        <div style="flex-grow: 1; overflow-y: auto; padding-right: 0.5rem;">
+                            <div class="asset-list" id="assetTrackerList">
+                                <!-- Populated dynamically with edit buttons -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reports Stats Card -->
+                    <div class="glass-card" style="margin-bottom: 0; height: 440px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; padding: 2rem;">
+                        <div class="reports-stats-grid" style="display: flex; flex-direction: column; gap: 1.25rem; width: 100%;">
+                            <div class="rep-stat-card ytd-income" style="width: auto; margin: 0; padding: 1.25rem;">
+                                <div class="rep-stat-val" id="repIncomeYTD" style="font-size: 1.5rem;">₹0</div>
+                                <div class="rep-stat-lbl">Total Income</div>
+                            </div>
+                            <div class="rep-stat-card ytd-expense" style="width: auto; margin: 0; padding: 1.25rem;">
+                                <div class="rep-stat-val" id="repExpenseYTD" style="font-size: 1.5rem;">₹0</div>
+                                <div class="rep-stat-lbl">Total Expenses</div>
+                            </div>
+                            <div class="rep-stat-card networth-stat" style="width: auto; margin: 0; padding: 1.25rem;">
+                                <div class="rep-stat-val" id="repNetWorth" style="font-size: 1.5rem;">₹0</div>
+                                <div class="rep-stat-lbl">Current Net Worth</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Budget Tab -->
+        <div id="budget" class="tab-content">
+            <div class="grid-main-side">
+                <!-- Left column: Monthly Cash Flow Meter + Calendar View -->
+                <div style="display: flex; flex-direction: column; gap: 2rem;">
+                    <!-- Monthly Cash Flow Meter (Main Area) -->
+                    <div class="glass-card">
+                        <h3 class="section-title"><i class="fa-solid fa-chart-simple"></i> Monthly Cash Flow (Income vs Expenses)</h3>
+                        <div class="cashflow-container">
+                            <!-- Income -->
+                            <div class="cashflow-item">
+                                <div class="cashflow-label-row">
+                                    <span class="cashflow-title"><i class="fa-solid fa-arrow-trend-up" style="color: var(--color-income);"></i> Income</span>
+                                    <div class="cashflow-val-pct">
+                                        <span class="cashflow-val" id="cashflowIncomeVal">₹0</span>
+                                        <span class="cashflow-pct">(100%)</span>
+                                    </div>
+                                </div>
+                                <div class="cashflow-bar-bg">
+                                    <div class="cashflow-bar-fill income" id="cashflowIncomeBar" style="width: 0%;"></div>
+                                </div>
+                            </div>
+
+                            <!-- Expenses -->
+                            <div class="cashflow-item">
+                                <div class="cashflow-label-row">
+                                    <span class="cashflow-title"><i class="fa-solid fa-arrow-trend-down" style="color: var(--color-expense);"></i> Expenses</span>
+                                    <div class="cashflow-val-pct">
+                                        <span class="cashflow-val" id="cashflowExpensesVal">₹0</span>
+                                        <span class="cashflow-pct" id="cashflowExpensesPct">0%</span>
+                                    </div>
+                                </div>
+                                <div class="cashflow-bar-bg">
+                                    <div class="cashflow-bar-fill expense" id="cashflowExpensesBar" style="width: 0%;"></div>
+                                </div>
+                            </div>
+
+                            <!-- Savings -->
+                            <div class="cashflow-item">
+                                <div class="cashflow-label-row">
+                                    <span class="cashflow-title"><i class="fa-solid fa-piggy-bank" style="color: var(--color-bank);"></i> Savings</span>
+                                    <div class="cashflow-val-pct">
+                                        <span class="cashflow-val" id="cashflowSavingsVal">₹0</span>
+                                        <span class="cashflow-pct" id="cashflowSavingsPct">0%</span>
+                                    </div>
+                                </div>
+                                <div class="cashflow-bar-bg">
+                                    <div class="cashflow-bar-fill savings" id="cashflowSavingsBar" style="width: 0%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Calendar View Card -->
+                    <div class="glass-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+                            <h3 class="section-title" style="margin-bottom: 0;"><i class="fa-solid fa-calendar-days"></i> Calendar View</h3>
+                            <button onclick="addCalendarEvent()" class="budget-edit-btn" title="Add Event" style="font-size: 0.85rem; padding: 0.25rem 0.5rem; background: rgba(99, 102, 241, 0.08); color: var(--color-bank); border-radius: var(--radius-md); font-weight: 700; height: auto;">
+                                <i class="fa-solid fa-plus"></i> Add Event
+                            </button>
+                        </div>
+                        <p class="bal-lbl" style="margin-bottom: 1.25rem; font-weight: 600;">Monthly finance calendar.</p>
+                        
+                        <div style="display: flex; gap: 1.5rem; flex-wrap: wrap; align-items: flex-start;">
+                            <!-- Interactive calendar month matrix -->
+                            <div class="calendar-grid-visual" id="calendarGridMonth" style="flex: 1 1 240px; display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.25rem; background: rgba(15,23,42,0.02); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 0.75rem; min-width: 240px; box-sizing: border-box;">
+                                <!-- Filled by JavaScript: Mon, Tue, etc. + Days of Month -->
+                            </div>
+                            
+                            <!-- Calendar event listing -->
+                            <div style="flex: 1 1 280px; display: flex; flex-direction: column; gap: 0.5rem;" id="calendarEventsList">
+                                <!-- Populated dynamically by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right column: Monthly Budget Card + Tax Section -->
+                <div style="display: flex; flex-direction: column; gap: 2rem;">
+                    <!-- Monthly Budget Card -->
+                    <div class="glass-card">
+                        <h3 class="form-title"><i class="fa-solid fa-calendar-days"></i> Monthly Budget</h3>
+                        <div class="budget-tracker-container">
+                            <div class="budget-header-info">
+                                <div class="bal-lbl">Monthly Budget Limit</div>
+                                <div class="budget-limit-val">
+                                    <span id="budgetLimitText">₹0</span>
+                                    <button class="budget-edit-btn" id="editBudgetBtn" title="Set Limit">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="budget-progress-section" style="margin-top: 1.5rem;">
+                                <div class="budget-progress-labels">
+                                    <span class="bal-lbl">Spent this Month</span>
+                                    <span class="budget-pct" id="budgetPctText">0%</span>
+                                </div>
+                                <div class="budget-spent-val" id="monthlySpentText">₹0</div>
+                                <div class="budget-progress-bar-bg">
+                                    <div class="budget-progress-bar-fill" id="budgetProgressBar"></div>
+                                </div>
+                                <div class="budget-status-msg" id="budgetStatusMsg"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tax Section Card -->
+                    <div class="glass-card">
+                        <h3 class="form-title"><i class="fa-solid fa-percent"></i> Tax Section</h3>
+                        <div style="display: flex; flex-direction: column; gap: 1rem; margin-top: 1rem;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid rgba(15,23,42,0.04);">
+                                <span class="bal-lbl" style="margin-bottom: 0;">Estimated Tax</span>
+                                <div style="display: flex; align-items: center; gap: 0.4rem;">
+                                    <span style="font-weight: 800; color: var(--color-expense); font-size: 1.05rem;" id="taxEstVal">₹0</span>
+                                    <button class="budget-edit-btn" onclick="editTaxMetric('estimatedTax', 'Estimated Tax')" title="Edit" style="padding: 0.15rem; background: transparent; color: var(--text-muted); font-size: 0.75rem;">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid rgba(15,23,42,0.04);">
+                                <span class="bal-lbl" style="margin-bottom: 0;">80C Investment</span>
+                                <div style="display: flex; align-items: center; gap: 0.4rem;">
+                                    <span style="font-weight: 800; color: var(--color-income); font-size: 1.05rem;" id="tax80cVal">₹0</span>
+                                    <button class="budget-edit-btn" onclick="editTaxMetric('investment80c', '80C Investment')" title="Edit" style="padding: 0.15rem; background: transparent; color: var(--text-muted); font-size: 0.75rem;">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid rgba(15,23,42,0.04);">
+                                <span class="bal-lbl" style="margin-bottom: 0;">Tax Saved</span>
+                                <div style="display: flex; align-items: center; gap: 0.4rem;">
+                                    <span style="font-weight: 800; color: var(--color-income); font-size: 1.05rem;" id="taxSavedVal">₹0</span>
+                                    <button class="budget-edit-btn" onclick="editTaxMetric('taxSaved', 'Tax Saved')" title="Edit" style="padding: 0.15rem; background: transparent; color: var(--text-muted); font-size: 0.75rem;">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid rgba(15,23,42,0.04);">
+                                <span class="bal-lbl" style="margin-bottom: 0;">Capital Gains</span>
+                                <div style="display: flex; align-items: center; gap: 0.4rem;">
+                                    <span style="font-weight: 800; color: var(--text-primary); font-size: 1.05rem;" id="taxCapGainsVal">₹0</span>
+                                    <button class="budget-edit-btn" onclick="editTaxMetric('capitalGains', 'Capital Gains')" title="Edit" style="padding: 0.15rem; background: transparent; color: var(--text-muted); font-size: 0.75rem;">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <button onclick="downloadTaxReport()" class="submit-btn" style="margin-top: 0.75rem; background: rgba(99, 102, 241, 0.08); color: var(--color-bank); font-weight: 700; border: 1px solid rgba(99, 102, 241, 0.15); display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; width: 100%;">
+                                <i class="fa-solid fa-file-pdf"></i> Tax Reports
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bills Tab -->
+        <div id="bills" class="tab-content">
+            <div class="grid-main-side">
+                <!-- Upcoming Bills & Bills Summary (Main Area) -->
+                <div style="display: flex; flex-direction: column; gap: 2rem;">
+                    <!-- Upcoming Bills Card -->
+                    <div class="glass-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                            <h3 class="section-title" style="margin-bottom: 0;"><i class="fa-solid fa-clock"></i> Upcoming Bills</h3>
+                            <button onclick="addUpcomingBill()" class="budget-edit-btn" title="Add Upcoming Bill" style="font-size: 0.85rem; padding: 0.25rem 0.5rem; background: rgba(99, 102, 241, 0.08); color: var(--color-bank); border-radius: var(--radius-md); font-weight: 700; height: auto;">
+                                <i class="fa-solid fa-plus"></i> Add Bill
+                            </button>
+                        </div>
+                        <div id="upcomingBillsList" style="display: flex; flex-direction: column; gap: 0.75rem;">
+                            <!-- Populated dynamically by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Stats Card (Bills Summary) -->
+                    <div class="glass-card">
+                        <h3 class="form-title"><i class="fa-solid fa-calculator"></i> Bills Summary</h3>
+                        <div style="display: flex; flex-direction: column; gap: 1rem; margin-top: 1rem;">
+                            <div>
+                                <div class="bal-lbl">Total Pending Amount</div>
+                                <div class="metric-value" id="pendingBillsVal" style="font-size: 1.75rem; font-weight: 900; color: var(--color-expense);">₹0</div>
+                            </div>
+                            <div>
+                                <div class="bal-lbl">Active Pending Bills</div>
+                                <div class="metric-value" id="pendingBillsCount" style="font-size: 1.5rem; font-weight: 800; color: var(--text-primary);">0</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Financial Goals & History (Sidebar Area) -->
+                <div style="display: flex; flex-direction: column; gap: 2rem;">
+                    <!-- Financial Goals Card -->
+                    <div class="glass-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                            <h3 class="section-title" style="margin-bottom: 0;"><i class="fa-solid fa-bullseye"></i> Financial Goals</h3>
+                            <button onclick="addFinancialGoal()" class="budget-edit-btn" title="Add Goal" style="font-size: 0.85rem; padding: 0.25rem 0.5rem; background: rgba(99, 102, 241, 0.08); color: var(--color-bank); border-radius: var(--radius-md); font-weight: 700; height: auto;">
+                                <i class="fa-solid fa-plus"></i> Add Goal
+                            </button>
+                        </div>
+                        <div id="financialGoalsList" style="display: flex; flex-direction: column; gap: 1.25rem;">
+                            <!-- Populated dynamically by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Paid History Card -->
+                    <div class="glass-card">
+                        <h3 class="form-title"><i class="fa-solid fa-circle-check"></i> Paid Bills History</h3>
+                        <div id="paidBillsHistoryList" style="display: flex; flex-direction: column; gap: 0.75rem; max-height: 250px; overflow-y: auto; margin-top: 1rem; padding-right: 0.25rem;">
+                            <!-- Populated dynamically by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-top">
+                <div class="logo-section">
+                    <div class="logo-icon">
+                        <i class="fas fa-wallet"></i>
+                    </div>
+                    <div class="logo-text">
+                        <h1>FinancePro</h1>
+                        <p>Your Personal Wealth Manager</p>
+                    </div>
+                </div>
+                <ul class="footer-links">
+                    <li><a href="#" onclick="showTab('dashboard'); return false;">Dashboard</a></li>
+                    <li><a href="#" onclick="showTab('income'); return false;">Income</a></li>
+                    <li><a href="#" onclick="showTab('expenses'); return false;">Expenses</a></li>
+                    <li><a href="#" onclick="showTab('investments'); return false;">Investments</a></li>
+                    <li><a href="#" onclick="showTab('bank'); return false;">Bank Accounts</a></li>
+                    <li><a href="#" onclick="showTab('budget'); return false;">Budget</a></li>
+                    <li><a href="#" onclick="showTab('bills'); return false;">Bills</a></li>
+                    <li><a href="#" onclick="showTab('reports'); return false;">Reports</a></li>
+                </ul>
+            </div>
+            <div class="footer-bottom">
+                <div>&copy; 2026 FinancePro. All rights reserved. Made with ❤️ for smart wealth tracking.</div>
+                <div class="footer-socials">
+                    <a href="#" title="Twitter"><i class="fa-brands fa-twitter"></i></a>
+                    <a href="#" title="GitHub"><i class="fa-brands fa-github"></i></a>
+                    <a href="#" title="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!-- AI Insights Chatbot Sidebar Drawer -->
+    <div id="aiChatbotSidebar" class="chatbot-sidebar">
+        <div class="chatbot-header">
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <i class="fa-solid fa-wand-magic-sparkles" style="color: #a855f7; font-size: 1.25rem;"></i>
+                <h3 style="margin: 0; font-size: 1.15rem; font-weight: 800; color: var(--text-primary);">AI Financial Assistant</h3>
+            </div>
+            <button onclick="toggleAiChatbot()" class="chatbot-close-btn" title="Close Sidebar">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="chatbot-messages" id="chatbotMessages">
+            <!-- Populated with initial AI insights and greetings -->
+        </div>
+        <div class="chatbot-input-area">
+            <input type="text" id="chatbotInputText" placeholder="Ask anything (e.g. 'how is my food budget?')..." onkeydown="if(event.key === 'Enter') sendChatbotMessage()">
+            <button onclick="sendChatbotMessage()" class="chatbot-send-btn" title="Send message">
+                <i class="fa-solid fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Backdrop overlay when sidebar is open -->
+    <div id="sidebarOverlay" class="sidebar-overlay" onclick="toggleAiChatbot()"></div>
+
+    <!-- Custom Modal for Prompts -->
+    <div id="customModalOverlay" class="modal-overlay">
+        <div class="modal-box">
+            <h3 id="customModalTitle" class="modal-title">Set Value</h3>
+            <p id="customModalMessage" class="modal-message">Please enter a value:</p>
+            <div class="modal-body">
+                <input type="text" id="customModalInput" class="modal-input" placeholder="Type here...">
+            </div>
+            <div class="modal-footer">
+                <button id="customModalCancel" class="modal-btn cancel">Cancel</button>
+                <button id="customModalOk" class="modal-btn ok">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Investment Modal -->
+    <div id="editInvestModalOverlay" class="modal-overlay">
+        <div class="modal-box" style="max-width: 460px;">
+            <h3 class="modal-title"><i class="fa-solid fa-pen-to-square" style="color: var(--color-bank); margin-right: 0.5rem;"></i>Edit Portfolio Asset</h3>
+            <p class="modal-message">Modify the asset details below:</p>
+            <form id="editInvestForm" style="display: flex; flex-direction: column; gap: 1rem;">
+                <input type="hidden" id="editInvestId">
+                <div class="form-group" style="display: flex; flex-direction: column; gap: 0.4rem;">
+                    <label for="editInvestName" style="font-size: 0.85rem; font-weight: 700; color: var(--text-secondary); margin-bottom: 0;">Asset Name</label>
+                    <input type="text" id="editInvestName" required style="padding: 0.75rem 1rem; border-radius: var(--radius-lg); border: 1px solid var(--border-color);">
+                </div>
+                <div class="form-group" style="display: flex; flex-direction: column; gap: 0.4rem;">
+                    <label for="editInvestType" style="font-size: 0.85rem; font-weight: 700; color: var(--text-secondary); margin-bottom: 0;">Asset Type</label>
+                    <select id="editInvestType" style="padding: 0.75rem 1rem; border-radius: var(--radius-lg); border: 1px solid var(--border-color); background: white;">
+                        <option value="Mutual Fund">Mutual Fund</option>
+                        <option value="Stocks">Stocks</option>
+                        <option value="SIP">SIP</option>
+                        <option value="Trading">Trading</option>
+                        <option value="Gold">Gold</option>
+                        <option value="FD">FD</option>
+                        <option value="Cash">Cash</option>
+                        <option value="Crypto">Crypto</option>
+                        <option value="Other">Other...</option>
+                    </select>
+                </div>
+                <div class="form-group" id="editInvestTypeOtherWrapper" style="display: none; flex-direction: column; gap: 0.4rem;">
+                    <label for="editInvestTypeOther" style="font-size: 0.85rem; font-weight: 700; color: var(--text-secondary); margin-bottom: 0;">Custom Type</label>
+                    <input type="text" id="editInvestTypeOther" style="padding: 0.75rem 1rem; border-radius: var(--radius-lg); border: 1px solid var(--border-color);">
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group" style="display: flex; flex-direction: column; gap: 0.4rem;">
+                        <label for="editInvestAmount" style="font-size: 0.85rem; font-weight: 700; color: var(--text-secondary); margin-bottom: 0;">Invested Value (₹)</label>
+                        <input type="number" id="editInvestAmount" min="1" step="any" required style="padding: 0.75rem 1rem; border-radius: var(--radius-lg); border: 1px solid var(--border-color);">
+                    </div>
+                    <div class="form-group" style="display: flex; flex-direction: column; gap: 0.4rem;">
+                        <label for="editInvestReturns" style="font-size: 0.85rem; font-weight: 700; color: var(--text-secondary); margin-bottom: 0;">Returns (%)</label>
+                        <input type="number" id="editInvestReturns" min="0" step="0.01" required style="padding: 0.75rem 1rem; border-radius: var(--radius-lg); border: 1px solid var(--border-color);">
+                    </div>
+                </div>
+                <div class="form-group" style="display: flex; flex-direction: column; gap: 0.4rem;">
+                    <label for="editInvestDate" style="font-size: 0.85rem; font-weight: 700; color: var(--text-secondary); margin-bottom: 0;">Investment Date</label>
+                    <input type="date" id="editInvestDate" style="padding: 0.75rem 1rem; border-radius: var(--radius-lg); border: 1px solid var(--border-color);">
+                </div>
+                <div class="modal-footer" style="margin-top: 1rem; display: flex; justify-content: flex-end; gap: 0.75rem;">
+                    <button type="button" id="editInvestCancel" class="modal-btn cancel">Cancel</button>
+                    <button type="submit" class="modal-btn ok">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Bank Account History Modal -->
+    <div id="bankHistoryModalOverlay" class="modal-overlay">
+        <div class="modal-box" style="max-width: 500px; max-height: 85vh; overflow: hidden; display: flex; flex-direction: column;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+                <div>
+                    <h3 id="bankHistoryTitle" class="modal-title">Account History</h3>
+                    <div id="bankHistoryMeta" class="modal-message" style="margin-top: 0.25rem; font-size: 0.85rem; line-height: 1.5;"></div>
+                </div>
+                <button type="button" class="chatbot-close-btn" onclick="closeBankHistory()" style="font-size: 1.5rem; color: var(--text-secondary); background: transparent; border: none; cursor: pointer;">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div id="bankHistoryContent" style="flex-grow: 1; overflow-y: auto; margin: 1rem 0; padding-right: 0.5rem;">
+                <!-- Dynamically populated transaction list -->
+            </div>
+            <div class="modal-footer" style="display: flex; justify-content: flex-end; margin-top: auto; padding-top: 0.5rem; border-top: 1px solid var(--border-color);">
+                <button type="button" class="modal-btn cancel" onclick="closeBankHistory()">Close</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
