@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FinancePro - Mobile App</title>
+    <!-- ChartJS library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+    <!-- FontAwesome icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Font (Outfit) -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Mobile App Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Mobile App Script -->
+    <script src="app.js" defer></script>
+</head>
+<body class="light-mode">
+
+    <!-- Overall Mobile App Wrapper Frame -->
+    <div class="app-frame">
+        <!-- Phone Bezel / Screen Overlay (Only visible on desktop) -->
+        <div class="phone-status-bar">
+            <span class="status-time" id="statusTime">12:00</span>
+            <div class="status-icons">
+                <i class="fa-solid fa-signal"></i>
+                <i class="fa-solid fa-wifi"></i>
+                <i class="fa-solid fa-battery-full"></i>
+            </div>
+        </div>
+
+        <!-- App Main Header -->
+        <header class="app-header">
+            <div class="header-user">
+                <div class="user-avatar">
+                    <i class="fa-solid fa-user-ninja"></i>
+                </div>
+                <div class="user-info">
+                    <span class="user-greeting">Hi, Wealth Master</span>
+                    <span class="user-balance-label">Net Worth</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <button onclick="toggleTheme()" id="themeToggleBtn" class="header-action-btn" title="Toggle Theme">
+                    <i class="fa-solid fa-moon"></i>
+                </button>
+                <div class="header-badge" id="netWorthHeaderVal">₹0</div>
+            </div>
+        </header>
+
+        <!-- Main Content Area (Scrollable) -->
+        <main class="app-content">
+
+            <!-- TAB 1: OVERVIEW / DASHBOARD -->
+            <div id="dashboard" class="tab-content active">
+                <div class="app-banner">
+                    <h2>Total Savings</h2>
+                    <h1 id="totalSavingsVal">₹0</h1>
+                    <p class="banner-sub">Combined Bank Balance</p>
+                </div>
+
+                <!-- Horizontal Quick Metrics Carousel -->
+                <div class="metrics-scroller">
+                    <div class="metric-mini-card income">
+                        <div class="mini-card-icon"><i class="fa-solid fa-arrow-trend-up"></i></div>
+                        <div class="mini-card-details">
+                            <span class="mini-label">Income</span>
+                            <span class="mini-val" id="totalIncomeVal">₹0</span>
+                        </div>
+                    </div>
+                    <div class="metric-mini-card expense">
+                        <div class="mini-card-icon"><i class="fa-solid fa-arrow-trend-down"></i></div>
+                        <div class="mini-card-details">
+                            <span class="mini-label">Expenses</span>
+                            <span class="mini-val" id="totalExpensesVal">₹0</span>
+                        </div>
+                    </div>
+                    <div class="metric-mini-card investment">
+                        <div class="mini-card-icon"><i class="fa-solid fa-chart-line"></i></div>
+                        <div class="mini-card-details">
+                            <span class="mini-label">Invested</span>
+                            <span class="mini-val" id="totalInvestmentsVal">₹0</span>
+                        </div>
+                    </div>
+                    <div class="metric-mini-card savings">
+                        <div class="mini-card-icon"><i class="fa-solid fa-wallet"></i></div>
+                        <div class="mini-card-details">
+                            <span class="mini-label">Mo. Savings</span>
+                            <span class="mini-val" id="monthlySavingsVal">₹0</span>
+                        </div>
+                    </div>
+                    <div class="metric-mini-card emergency">
+                        <div class="mini-card-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                        <div class="mini-card-details">
+                            <span class="mini-label">Emergency</span>
+                            <span class="mini-val" id="emergencyFundVal">₹0</span>
+                        </div>
+                    </div>
+                    <div class="metric-mini-card debt-card">
+                        <div class="mini-card-icon"><i class="fa-solid fa-hand-holding-dollar"></i></div>
+                        <div class="mini-card-details">
+                            <span class="mini-label">Total Debt</span>
+                            <span class="mini-val" id="debtVal">₹0</span>
+                        </div>
+                    </div>
+                    <div class="metric-mini-card returns">
+                        <div class="mini-card-icon"><i class="fa-solid fa-coins"></i></div>
+                        <div class="mini-card-details">
+                            <span class="mini-label">Inv. Returns</span>
+                            <span class="mini-val" id="investReturnsVal">₹0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section: Bank Accounts -->
+                <div class="section-container">
+                    <div class="section-header">
+                        <h3>Bank Accounts</h3>
+                        <button class="section-link-btn" onclick="openAddBankModal()"><i class="fa-solid fa-plus"></i> Add Account</button>
+                    </div>
+                    <div class="banks-carousel" id="bankAccountsList">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+
+                <!-- Section: Recent Ledger -->
+                <div class="section-container">
+                    <div class="section-header">
+                        <h3>Recent Transactions</h3>
+                        <button class="section-link-btn" onclick="switchTab('ledger')">See All <i class="fa-solid fa-chevron-right"></i></button>
+                    </div>
+                    <div class="ledger-filter-pill-bar" style="margin-bottom: 0.85rem;">
+                        <input type="text" id="dashboardSearchText" placeholder="Search transactions..." class="app-search-input">
+                    </div>
+                    <div class="recent-ledger-list" id="dashboardLedgerList">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 1B: INCOME MANAGER -->
+            <div id="income" class="tab-content">
+                <div class="view-header">
+                    <h2>Income Manager</h2>
+                    <p>Log deposits & review source history</p>
+                </div>
+
+                <!-- Form Card -->
+                <div class="glass-card-mobile">
+                    <h4 class="card-section-title"><i class="fa-solid fa-arrow-trend-up" style="color: var(--color-income);"></i> Add Income Source</h4>
+                    <form id="tabAddIncomeForm" style="display: flex; flex-direction: column; gap: 0.75rem; margin-top: 0.5rem;">
+                        <div class="form-group-compact">
+                            <label for="tabIncomeSource">Income Source / Title</label>
+                            <input type="text" id="tabIncomeSource" placeholder="e.g. Monthly Salary, Freelance" required>
+                        </div>
+                        <div class="form-group-compact">
+                            <label for="tabIncomeAmount">Amount (₹)</label>
+                            <input type="number" id="tabIncomeAmount" placeholder="Amount in ₹" min="1" step="any" required>
+                        </div>
+                        <div class="form-group-compact">
+                            <label for="tabIncomeCategory">Category</label>
+                            <select id="tabIncomeCategory">
+                                <option value="Salary">Salary</option>
+                                <option value="Freelance">Freelance</option>
+                                <option value="Business">Business</option>
+                                <option value="Bonus">Bonus</option>
+                                <option value="Interest">Interest</option>
+                                <option value="Other">Other...</option>
+                            </select>
+                        </div>
+                        <div class="form-group-compact" id="tabIncomeCategoryOtherWrapper" style="display: none;">
+                            <label for="tabIncomeCategoryOther">Custom Category</label>
+                            <input type="text" id="tabIncomeCategoryOther" placeholder="Enter custom category">
+                        </div>
+                        <div class="form-group-compact">
+                            <label for="tabIncomeBank">Deposit Account</label>
+                            <select id="tabIncomeBank" required>
+                                <!-- Populated dynamically -->
+                            </select>
+                        </div>
+                        <div class="form-group-compact">
+                            <label for="tabIncomeDate">Date</label>
+                            <input type="date" id="tabIncomeDate">
+                        </div>
+                        <button type="submit" class="app-submit-btn income" style="margin-top: 0.5rem;">
+                            <i class="fas fa-plus"></i> Add Income
+                        </button>
+                    </form>
+                </div>
+
+                <!-- History Card -->
+                <div class="section-container" style="margin-top: 1.5rem;">
+                    <div class="section-header">
+                        <h3>Income History</h3>
+                    </div>
+                    <div class="ledger-filter-pill-bar" style="margin-bottom: 0.85rem;">
+                        <input type="text" id="tabIncomeSearchText" placeholder="Search income logs..." class="app-search-input">
+                    </div>
+                    <div class="recent-ledger-list" id="tabIncomeList">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 1C: EXPENSES MANAGER -->
+            <div id="expenses" class="tab-content">
+                <div class="view-header">
+                    <h2>Expenses Manager</h2>
+                    <p>Track cash outings & review categories</p>
+                </div>
+
+                <!-- Form Card -->
+                <div class="glass-card-mobile">
+                    <h4 class="card-section-title"><i class="fa-solid fa-arrow-trend-down" style="color: var(--color-expense);"></i> Track Expense</h4>
+                    <form id="tabLogExpenseForm" style="display: flex; flex-direction: column; gap: 0.75rem; margin-top: 0.5rem;">
+                        <div class="form-group-compact">
+                            <label for="tabExpenseTitle">Expense Description / Title</label>
+                            <input type="text" id="tabExpenseTitle" placeholder="e.g. Groceries, Coffee, Rent" required>
+                        </div>
+                        <div class="form-group-compact">
+                            <label for="tabExpenseAmount">Amount (₹)</label>
+                            <input type="number" id="tabExpenseAmount" placeholder="Amount in ₹" min="1" step="any" required>
+                        </div>
+                        <div class="form-group-compact">
+                            <label for="tabExpenseCategory">Category</label>
+                            <select id="tabExpenseCategory">
+                                <option value="Food">Food</option>
+                                <option value="Rent">Rent</option>
+                                <option value="Shopping">Shopping</option>
+                                <option value="Transport">Transport</option>
+                                <option value="Bills">Bills</option>
+                                <option value="Travel">Travel</option>
+                                <option value="Entertainment">Entertainment</option>
+                                <option value="Insurance">Insurance</option>
+                                <option value="Medical">Medical</option>
+                                <option value="Other">Other...</option>
+                            </select>
+                        </div>
+                        <div class="form-group-compact" id="tabExpenseCategoryOtherWrapper" style="display: none;">
+                            <label for="tabExpenseCategoryOther">Custom Category</label>
+                            <input type="text" id="tabExpenseCategoryOther" placeholder="Enter custom category">
+                        </div>
+                        <div class="form-group-compact">
+                            <label for="tabExpenseBank">Pay Account</label>
+                            <select id="tabExpenseBank" required>
+                                <!-- Populated dynamically -->
+                            </select>
+                        </div>
+                        <div class="form-group-compact">
+                            <label for="tabExpenseDate">Date</label>
+                            <input type="date" id="tabExpenseDate">
+                        </div>
+                        <button type="submit" class="app-submit-btn expense" style="margin-top: 0.5rem;">
+                            <i class="fas fa-plus"></i> Track Expense
+                        </button>
+                    </form>
+                </div>
+
+                <!-- History Card -->
+                <div class="section-container" style="margin-top: 1.5rem;">
+                    <div class="section-header">
+                        <h3>Expenses History</h3>
+                    </div>
+                    <div class="ledger-filter-pill-bar" style="margin-bottom: 0.85rem;">
+                        <input type="text" id="tabExpenseSearchText" placeholder="Search expense logs..." class="app-search-input">
+                    </div>
+                    <div class="recent-ledger-list" id="tabExpenseList">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: UNIVERSAL LEDGER -->
+            <div id="ledger" class="tab-content">
+                <div class="view-header">
+                    <h2>Transactions</h2>
+                    <p>Search & filter financial logs</p>
+                </div>
+
+                <!-- Search and Filters Drawer Toggle -->
+                <div class="ledger-filter-pill-bar">
+                    <input type="text" id="ledgerSearchText" placeholder="Search title or category..." class="app-search-input">
+                    <button class="filter-toggle-btn" id="filterDrawerBtn" onclick="toggleFilterDrawer()"><i class="fa-solid fa-sliders"></i></button>
+                </div>
+
+                <!-- Expanded Filter Drawer (Slideable inside the tab) -->
+                <div class="filter-drawer-container" id="filterDrawer">
+                    <div class="filter-drawer-header">
+                        <span>Advanced Filters</span>
+                        <button onclick="toggleFilterDrawer()"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                    <div class="filter-grid">
+                        <div class="form-group-compact">
+                            <label>Type</label>
+                            <select id="ledgerType">
+                                <option value="all">All Types</option>
+                                <option value="income">Income Only</option>
+                                <option value="expense">Expense Only</option>
+                            </select>
+                        </div>
+                        <div class="form-group-compact">
+                            <label>From Date</label>
+                            <input type="date" id="ledgerStartDate">
+                        </div>
+                        <div class="form-group-compact">
+                            <label>To Date</label>
+                            <input type="date" id="ledgerEndDate">
+                        </div>
+                    </div>
+                    <div class="filter-actions">
+                        <button id="clearLedgerFiltersBtn" class="btn-secondary-compact"><i class="fa-solid fa-arrow-rotate-left"></i> Reset</button>
+                        <button class="btn-primary-compact" onclick="toggleFilterDrawer()">Apply</button>
+                    </div>
+                </div>
+
+                <!-- Main Scrollable Ledger List -->
+                <div class="full-ledger-list" id="ledgerList">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+
+            <!-- TAB 3: BUDGETS & BILLS -->
+            <div id="budget" class="tab-content">
+                <div class="view-header">
+                    <h2>Budgets & Bills</h2>
+                    <p>Track cash flow & monthly limits</p>
+                </div>
+
+                <!-- Budget Card -->
+                <div class="glass-card-mobile budget-progress-card">
+                    <div class="budget-card-header">
+                        <div class="budget-card-title">
+                            <span class="label">Monthly Budget Limit</span>
+                            <h2 id="budgetLimitText">₹0</h2>
+                        </div>
+                        <button class="budget-edit-btn" id="editBudgetBtn"><i class="fa-solid fa-pen-to-square"></i></button>
+                    </div>
+
+                    <div class="budget-progress-info">
+                        <div class="progress-labels">
+                            <span>Spent this month</span>
+                            <span id="budgetPctText">0%</span>
+                        </div>
+                        <h3 id="monthlySpentText">₹0</h3>
+                        <div class="progress-bar-track">
+                            <div class="progress-bar-fill" id="budgetProgressBar"></div>
+                        </div>
+                        <p class="budget-status-msg" id="budgetStatusMsg"></p>
+                    </div>
+                </div>
+
+                <!-- Cash Flow Progress Bars -->
+                <div class="glass-card-mobile">
+                    <h4 class="card-section-title"><i class="fa-solid fa-scale-balanced"></i> Cash Flow (Income vs Expenses)</h4>
+                    <div class="cashflow-bars-container">
+                        <div class="cashflow-row">
+                            <div class="flow-info">
+                                <span>Income Baseline</span>
+                                <span id="cashflowIncVal">₹0</span>
+                            </div>
+                            <div class="flow-bar-track">
+                                <div class="flow-bar-fill income" id="cashflowIncBar" style="width: 100%;"></div>
+                            </div>
+                        </div>
+                        <div class="cashflow-row">
+                            <div class="flow-info">
+                                <span>Expenses Ratio</span>
+                                <span id="cashflowExpVal">₹0</span>
+                            </div>
+                            <div class="flow-bar-track">
+                                <div class="flow-bar-fill expense" id="cashflowExpBar"></div>
+                            </div>
+                        </div>
+                        <div class="cashflow-row">
+                            <div class="flow-info">
+                                <span>Savings Ratio</span>
+                                <span id="cashflowSavVal">₹0</span>
+                            </div>
+                            <div class="flow-bar-track">
+                                <div class="flow-bar-fill savings" id="cashflowSavBar"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Monthly Finance Calendar -->
+                <div class="glass-card-mobile">
+                    <h4 class="card-section-title"><i class="fa-solid fa-calendar-days"></i> Finance Calendar (July 2026)</h4>
+                    <div class="calendar-grid-container">
+                        <div class="calendar-days-header">
+                            <span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span>
+                        </div>
+                        <div class="calendar-days-grid" id="calendarDaysGrid">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upcoming Bills Checklist -->
+                <div class="section-container">
+                    <div class="section-header">
+                        <h3>Upcoming Bills</h3>
+                        <button class="section-link-btn" onclick="addUpcomingBill()"><i class="fa-solid fa-plus"></i> Add Bill</button>
+                    </div>
+                    <div class="bills-list-stacked" id="upcomingBillsList">
+                        <!-- Populated dynamically -->
+                    </div>
+                    <div class="bill-totals-summary">
+                        <div class="bill-stat">
+                            <span>Pending Amount</span>
+                            <strong id="pendingBillsVal" class="danger-text">₹0</strong>
+                        </div>
+                        <div class="bill-stat">
+                            <span>Active Bills</span>
+                            <strong id="pendingBillsCount">0</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Financial Goals Cards -->
+                <div class="section-container">
+                    <div class="section-header">
+                        <h3>Financial Goals</h3>
+                        <button class="section-link-btn" onclick="addFinancialGoal()"><i class="fa-solid fa-plus"></i> Add Goal</button>
+                    </div>
+                    <div class="goals-carousel" id="financialGoalsList">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+
+                <!-- Paid History -->
+                <div class="section-container">
+                    <h3>Paid Bills History</h3>
+                    <div class="bills-list-stacked history" id="paidBillsHistoryList">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+
+                <!-- Tax Planning Card -->
+                <div class="glass-card-mobile">
+                    <h4 class="card-section-title"><i class="fa-solid fa-percent"></i> Tax Planning</h4>
+                    <div class="tax-planning-list">
+                        <div class="tax-row">
+                            <span class="tax-lbl">Estimated Tax</span>
+                            <div class="tax-val-box">
+                                <span class="danger-text" id="taxEstVal">₹0</span>
+                                <button onclick="editTaxMetric('estimatedTax', 'Estimated Tax')"><i class="fa-solid fa-pen-to-square"></i></button>
+                            </div>
+                        </div>
+                        <div class="tax-row">
+                            <span class="tax-lbl">80C Investment</span>
+                            <div class="tax-val-box">
+                                <span class="success-text" id="tax80cVal">₹0</span>
+                                <button onclick="editTaxMetric('investment80c', '80C Investment')"><i class="fa-solid fa-pen-to-square"></i></button>
+                            </div>
+                        </div>
+                        <div class="tax-row">
+                            <span class="tax-lbl">Tax Saved</span>
+                            <div class="tax-val-box">
+                                <span class="success-text" id="taxSavedVal">₹0</span>
+                                <button onclick="editTaxMetric('taxSaved', 'Tax Saved')"><i class="fa-solid fa-pen-to-square"></i></button>
+                            </div>
+                        </div>
+                        <div class="tax-row">
+                            <span class="tax-lbl">Capital Gains</span>
+                            <div class="tax-val-box">
+                                <span id="taxCapGainsVal">₹0</span>
+                                <button onclick="editTaxMetric('capitalGains', 'Capital Gains')"><i class="fa-solid fa-pen-to-square"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="app-submit-btn outline" onclick="downloadTaxReport()" style="margin-top: 1rem;">
+                        <i class="fa-solid fa-file-pdf"></i> Download Tax Report
+                    </button>
+                </div>
+            </div>
+
+            <!-- TAB 4: PORTFOLIO & INVESTMENTS -->
+            <div id="portfolio" class="tab-content">
+                <div class="view-header">
+                    <h2>Portfolio</h2>
+                    <p>Monitor wealth, reports & AI advisor</p>
+                </div>
+
+                <!-- Inner Tab Switcher: Assets, Reports, AI Chatbot -->
+                <div class="insights-tab-bar" style="margin-bottom: 1.25rem;">
+                    <button class="insights-tab-btn active" id="portTabAssets" onclick="switchPortfolioSubTab('portfolio-assets-subtab')">Assets</button>
+                    <button class="insights-tab-btn" id="portTabReports" onclick="switchPortfolioSubTab('portfolio-reports-subtab')">Reports</button>
+                    <button class="insights-tab-btn" id="portTabAi" onclick="switchPortfolioSubTab('portfolio-ai-subtab')">AI Assistant</button>
+                </div>
+
+                <!-- Sub-tab 1: Portfolio Assets (Metrics, Stocks, SIP/EMI) -->
+                <div id="portfolio-assets-subtab" class="portfolio-subcontent active">
+                    <!-- Investment Performance Dashboard -->
+                    <div class="glass-card-mobile performance-card">
+                        <h4 class="card-section-title"><i class="fa-solid fa-chart-line"></i> Performance Metrics</h4>
+                        <div class="perf-grid">
+                            <div class="perf-box">
+                                <span class="perf-label">Today's Gain</span>
+                                <div class="perf-val-edit">
+                                    <span id="perfTodayGain" class="success-text">+₹0</span>
+                                    <button onclick="editPerformanceMetric('todayGain', 'Today\'s Gain')"><i class="fa-solid fa-pen"></i></button>
+                                </div>
+                            </div>
+                            <div class="perf-box">
+                                <span class="perf-label">This Month</span>
+                                <div class="perf-val-edit">
+                                    <span id="perfMonthGain" class="success-text">+₹0</span>
+                                    <button onclick="editPerformanceMetric('monthGain', 'This Month\'s Gain')"><i class="fa-solid fa-pen"></i></button>
+                                </div>
+                            </div>
+                            <div class="perf-box">
+                                <span class="perf-label">This Year</span>
+                                <div class="perf-val-edit">
+                                    <span id="perfYearGain" class="success-text">+₹0</span>
+                                    <button onclick="editPerformanceMetric('yearGain', 'This Year\'s Gain')"><i class="fa-solid fa-pen"></i></button>
+                                </div>
+                            </div>
+                            <div class="perf-box">
+                                <span class="perf-label">Overall ROI</span>
+                                <div class="perf-val-edit">
+                                    <span id="perfOverallReturn" class="badge-roi">+0%</span>
+                                    <button onclick="editPerformanceMetric('overallReturn', 'Overall Return %')"><i class="fa-solid fa-pen"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Investment Assets List -->
+                    <div class="section-container">
+                        <h3>Portfolio Assets</h3>
+                        <div class="assets-stack" id="investmentsList">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- SIP Tracker Section -->
+                    <div class="section-container">
+                        <div class="section-header">
+                            <h3>SIP Tracker</h3>
+                            <button class="section-link-btn" onclick="addSipTracker()"><i class="fa-solid fa-plus"></i> Add SIP</button>
+                        </div>
+                        <div class="sip-emi-list" id="sipTrackerList">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- EMI Tracker Section -->
+                    <div class="section-container">
+                        <div class="section-header">
+                            <h3>EMI Tracker</h3>
+                            <button class="section-link-btn" onclick="addEmiTracker()"><i class="fa-solid fa-plus"></i> Add EMI</button>
+                        </div>
+                        <div class="sip-emi-list" id="emiTrackerList">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sub-tab 2: Reports & Charts -->
+                <div id="portfolio-reports-subtab" class="portfolio-subcontent">
+                    <!-- Income/Expense Allocation Pie Chart -->
+                    <div class="glass-card-mobile">
+                        <h4 class="card-section-title"><i class="fa-solid fa-chart-pie"></i> Spending Breakdown</h4>
+                        <div class="chart-wrapper">
+                            <canvas id="financeChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Net Worth Growth Trend Line Chart -->
+                    <div class="glass-card-mobile">
+                        <h4 class="card-section-title"><i class="fa-solid fa-chart-line"></i> Net Worth Trend (12 Months)</h4>
+                        <div class="chart-wrapper">
+                            <canvas id="netWorthTrendChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Investment Allocation Pie Chart -->
+                    <div class="glass-card-mobile">
+                        <h4 class="card-section-title"><i class="fa-solid fa-chart-pie"></i> Investment Allocation</h4>
+                        <div class="chart-wrapper">
+                            <canvas id="investAllocationChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Asset Allocation Tracker Card (11 Classes) -->
+                    <div class="glass-card-mobile">
+                        <h4 class="card-section-title"><i class="fa-solid fa-folder-open"></i> Asset Allocation Breakdown</h4>
+                        <div class="asset-grid" id="assetAllocationGrid">
+                            <!-- Populated dynamically by javascript -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sub-tab 3: AI Financial Chatbot (Styled like a real mobile messenger) -->
+                <div id="portfolio-ai-subtab" class="portfolio-subcontent">
+                    <div class="app-chat-container">
+                        <div class="chat-messages" id="chatbotMessages">
+                            <!-- Populated dynamically -->
+                        </div>
+                        <div class="chat-suggestions">
+                            <button onclick="sendQuickPrompt('How is my budget?')" class="suggestion-chip">How is my budget?</button>
+                            <button onclick="sendQuickPrompt('Recent expenses?')" class="suggestion-chip">Recent expenses?</button>
+                            <button onclick="sendQuickPrompt('Investment returns?')" class="suggestion-chip">Investment returns?</button>
+                        </div>
+                        <div class="chat-input-area">
+                            <input type="text" id="chatbotInputText" placeholder="Ask AI Assistant anything..." onkeydown="if(event.key === 'Enter') sendChatbotMessage()">
+                            <button onclick="sendChatbotMessage()" class="chat-send-btn"><i class="fa-solid fa-paper-plane"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- Bottom Navigation Bar with FAB Center Overlay -->
+        <nav class="bottom-nav">
+            <button class="nav-item active" data-tab="dashboard" onclick="switchTab('dashboard')">
+                <i class="fa-solid fa-house"></i>
+                <span>Home</span>
+            </button>
+            <button class="nav-item" data-tab="income" onclick="switchTab('income')">
+                <i class="fa-solid fa-arrow-trend-up"></i>
+                <span>Income</span>
+            </button>
+            <button class="nav-item" data-tab="expenses" onclick="switchTab('expenses')">
+                <i class="fa-solid fa-arrow-trend-down"></i>
+                <span>Expenses</span>
+            </button>
+            
+            <!-- Central FAB Placeholder (Acts as the floating button trigger) -->
+            <div class="fab-wrapper">
+                <button class="fab-btn" onclick="openBottomSheet()" title="Quick Add">
+                    <i class="fa-solid fa-plus"></i>
+                </button>
+            </div>
+
+            <button class="nav-item" data-tab="ledger" onclick="switchTab('ledger')">
+                <i class="fa-solid fa-receipt"></i>
+                <span>Ledger</span>
+            </button>
+            <button class="nav-item" data-tab="budget" onclick="switchTab('budget')">
+                <i class="fa-solid fa-scale-balanced"></i>
+                <span>Budgets</span>
+            </button>
+            <button class="nav-item" data-tab="portfolio" onclick="switchTab('portfolio')">
+                <i class="fa-solid fa-briefcase"></i>
+                <span>Portfolio</span>
+            </button>
+        </nav>
+
+        <!-- Slide-up Bottom Sheet for Adding Transactions -->
+        <div id="transactionBottomSheet" class="bottom-sheet">
+            <div class="bottom-sheet-backdrop" onclick="closeBottomSheet()"></div>
+            <div class="bottom-sheet-modal">
+                <div class="sheet-drag-handle"></div>
+                <div class="sheet-header">
+                    <h3>Add Transaction</h3>
+                    <button class="sheet-close-btn" onclick="closeBottomSheet()"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                
+                <!-- Bottom Sheet Tabs -->
+                <div class="sheet-nav-tabs">
+                    <button class="sheet-tab active" id="sheetTabIncome" onclick="switchSheetTab('income')">Income</button>
+                    <button class="sheet-tab" id="sheetTabExpense" onclick="switchSheetTab('expense')">Expense</button>
+                    <button class="sheet-tab" id="sheetTabInvestment" onclick="switchSheetTab('investment')">Investment</button>
+                </div>
+
+                <div class="sheet-forms-container">
+                    <!-- INCOME FORM -->
+                    <form id="addIncomeForm" class="sheet-form active">
+                        <div class="form-group-compact">
+                            <label for="incomeSource">Income Source / Title</label>
+                            <input type="text" id="incomeSource" placeholder="e.g. Monthly Salary, Freelance" required>
+                        </div>
+                        <div class="form-group-compact">
+                            <label for="incomeAmount">Amount (₹)</label>
+                            <input type="number" id="incomeAmount" placeholder="Amount in ₹" min="1" step="any" required>
+                        </div>
+                        <div class="form-group-compact">
+                            <label for="incomeCategory">Category</label>
+                            <select id="incomeCategory">
+                                <option value="Salary">Salary</option>
+                                <option value="Freelance">Freelance</option>
+                                <option value="Business">Business</option>
+                                <option value="Bonus">Bonus</option>
+                                <option value="Interest">Interest</option>
+                                <option value="Other">Other...</option>
+                            </select>
+                        </div>
+                        <div class="form-group-compact" id="incomeCategoryOtherWrapper" style="display: none;">
+                            <label for="incomeCategoryOther">Custom Category</label>
+                            <input type="text" id="incomeCategoryOther" placeholder="Enter custom category">
+                        </div>
+                        <div class="form-group-compact">
+                            <label for="incomeBank">Deposit Account</label>
+                            <select id="incomeBank" required>
+                                <!-- Populated dynamically -->
+                            </select>
+                        </div>
+                        <div class="form-group-compact">
+                            <label for="incomeDate">Date</label>
+                            <input type="date" id="incomeDate">
+                        </div>
+                        <button type="submit" class="app-submit-btn income">
+                            <i class="fas fa-plus"></i> Add Income
+                        </button>
+                    </form>
+
+                    <!-- EXPENSE FORM -->
+                    <form id="logExpenseForm" class="sheet-form">
+                        <div class="form-group-compact">
+                            <label for="expenseTitle">Expense Description / Title</label>
+                            <input type="text" id="expenseTitle" placeholder="e.g. Groceries, Coffee, Fuel" required>
+                        </div>
+                        <div class="form-group-compact">
+                            <label for="expenseAmount">Amount (₹)</label>
+                            <input type="number" id="expenseAmount" placeholder="Amount in ₹" min="1" step="any" required>
+                        </div>
+                        <div class="form-group-compact">
+                            <label for="expenseCategory">Category</label>
+                            <select id="expenseCategory">
+                                <option value="Food">Food</option>
+                                <option value="Rent">Rent</option>
+                                <option value="Shopping">Shopping</option>
+                                <option value="Transport">Transport</option>
+                                <option value="Bills">Bills</option>
+                                <option value="Travel">Travel</option>
+                                <option value="Entertainment">Entertainment</option>
+                                <option value="Insurance">Insurance</option>
+                                <option value="Medical">Medical</option>
+                                <option value="Other">Other...</option>
+                            </select>
+                        </div>
+                        <div class="form-group-compact" id="expenseCategoryOtherWrapper" style="display: none;">
+                            <label for="expenseCategoryOther">Custom Category</label>
+                            <input type="text" id="expenseCategoryOther" placeholder="Enter custom category">
+                        </div>
+                        <div class="form-group-compact">
+                            <label for="expenseBank">Payment Account</label>
+                            <select id="expenseBank" required>
+                                <!-- Populated dynamically -->
+                            </select>
+                        </div>
+                        <div class="form-group-compact">
+                            <label for="expenseDate">Date</label>
+                            <input type="date" id="expenseDate">
+                        </div>
+                        <button type="submit" class="app-submit-btn expense">
+                            <i class="fas fa-shopping-cart"></i> Track Expense
+                        </button>
+                    </form>
+
+                    <!-- INVESTMENT FORM -->
+                    <form id="newInvestmentForm" class="sheet-form">
+                        <div class="form-group-compact">
+                            <label for="investName">Investment Name</label>
+                            <input type="text" id="investName" placeholder="e.g. Mutual Fund / Stocks" required>
+                        </div>
+                        <div class="form-group-compact">
+                            <label for="investType">Type</label>
+                            <select id="investType">
+                                <option value="Mutual Fund">Mutual Fund</option>
+                                <option value="Stocks">Stocks</option>
+                                <option value="SIP">SIP</option>
+                                <option value="Trading">Trading</option>
+                                <option value="Gold">Gold</option>
+                                <option value="FD">FD</option>
+                                <option value="Cash">Cash</option>
+                                <option value="Crypto">Crypto</option>
+                                <option value="Other">Other...</option>
+                            </select>
+                        </div>
+                        <div class="form-group-compact" id="investTypeOtherWrapper" style="display: none;">
+                            <label for="investTypeOther">Custom Type</label>
+                            <input type="text" id="investTypeOther" placeholder="Enter custom type">
+                        </div>
+                        <div class="form-group-compact">
+                            <label for="investAmount">Invested Amount (₹)</label>
+                            <input type="number" id="investAmount" placeholder="Amount ₹" min="1" step="any" required>
+                        </div>
+                        <div class="form-group-compact">
+                            <label for="investReturns">Returns (%)</label>
+                            <input type="number" id="investReturns" placeholder="e.g. 12.5" step="0.01" min="0" required>
+                        </div>
+                        <div class="form-group-compact">
+                            <label for="investDate">Investment Date</label>
+                            <input type="date" id="investDate">
+                        </div>
+                        <button type="submit" class="app-submit-btn investment">
+                            <i class="fas fa-rocket"></i> Invest Now
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Bank Account Dialog Sheet (Slide up) -->
+        <div id="bankAccountSheet" class="bottom-sheet">
+            <div class="bottom-sheet-backdrop" onclick="closeAddBankModal()"></div>
+            <div class="bottom-sheet-modal">
+                <div class="sheet-drag-handle"></div>
+                <div class="sheet-header">
+                    <h3>Add Bank Account</h3>
+                    <button class="sheet-close-btn" onclick="closeAddBankModal()"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <form id="addBankForm" style="display: flex; flex-direction: column; gap: 0.85rem; padding: 1.25rem 0.5rem 2rem;">
+                    <div class="form-group-compact">
+                        <label for="bankAccName">Account Name</label>
+                        <input type="text" id="bankAccName" placeholder="e.g. Personal Checking, Family Savings" required>
+                    </div>
+                    <div class="form-group-compact">
+                        <label for="bankNameInput">Bank Name</label>
+                        <input type="text" id="bankNameInput" placeholder="e.g. HDFC Bank, SBI, ICICI" required>
+                    </div>
+                    <div class="form-group-compact">
+                        <label for="bankNumber">Account Number (Last 4 digits)</label>
+                        <input type="text" id="bankNumber" placeholder="e.g. 1234" pattern="\d{4}" maxlength="4" required>
+                    </div>
+                    <div class="form-group-compact">
+                        <label for="bankBalance">Current Balance (₹)</label>
+                        <input type="number" id="bankBalance" placeholder="Current Balance ₹" step="any" required>
+                    </div>
+                    <div class="form-group-compact">
+                        <label for="bankType">Account Type</label>
+                        <select id="bankType">
+                            <option value="Savings">Savings</option>
+                            <option value="Salary">Salary</option>
+                            <option value="Checking">Checking/Current</option>
+                            <option value="Credit Card">Credit Card</option>
+                            <option value="Other">Other...</option>
+                        </select>
+                    </div>
+                    <div class="form-group-compact" id="bankTypeOtherWrapper" style="display: none;">
+                        <label for="bankTypeOther">Custom Account Type</label>
+                        <input type="text" id="bankTypeOther" placeholder="Enter custom account type">
+                    </div>
+                    <button type="submit" class="app-submit-btn bank">
+                        <i class="fas fa-university"></i> Add Account
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Dialog: Edit Portfolio Asset -->
+        <div id="editInvestModalOverlay" class="modal-overlay">
+            <div class="modal-box">
+                <h3 class="modal-title"><i class="fa-solid fa-pen-to-square" style="color: var(--color-primary); margin-right: 0.5rem;"></i>Edit Asset</h3>
+                <p class="modal-message">Modify the asset details below:</p>
+                <form id="editInvestForm" style="display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1rem;">
+                    <input type="hidden" id="editInvestId">
+                    <div class="form-group-compact">
+                        <label for="editInvestName">Asset Name</label>
+                        <input type="text" id="editInvestName" required>
+                    </div>
+                    <div class="form-group-compact">
+                        <label for="editInvestType">Asset Type</label>
+                        <select id="editInvestType">
+                            <option value="Mutual Fund">Mutual Fund</option>
+                            <option value="Stocks">Stocks</option>
+                            <option value="SIP">SIP</option>
+                            <option value="Trading">Trading</option>
+                            <option value="Gold">Gold</option>
+                            <option value="FD">FD</option>
+                            <option value="Cash">Cash</option>
+                            <option value="Crypto">Crypto</option>
+                            <option value="Other">Other...</option>
+                        </select>
+                    </div>
+                    <div class="form-group-compact" id="editInvestTypeOtherWrapper" style="display: none;">
+                        <label for="editInvestTypeOther">Custom Type</label>
+                        <input type="text" id="editInvestTypeOther">
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                        <div class="form-group-compact">
+                            <label for="editInvestAmount">Invested (₹)</label>
+                            <input type="number" id="editInvestAmount" min="1" step="any" required>
+                        </div>
+                        <div class="form-group-compact">
+                            <label for="editInvestReturns">Returns (%)</label>
+                            <input type="number" id="editInvestReturns" min="0" step="0.01" required>
+                        </div>
+                    </div>
+                    <div class="form-group-compact">
+                        <label for="editInvestDate">Investment Date</label>
+                        <input type="date" id="editInvestDate">
+                    </div>
+                    <div class="modal-footer" style="margin-top: 1rem;">
+                        <button type="button" id="editInvestCancel" class="modal-btn cancel">Cancel</button>
+                        <button type="submit" class="modal-btn ok">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Dialog: Bank Account History -->
+        <div id="bankHistoryModalOverlay" class="modal-overlay">
+            <div class="modal-box scrollable">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+                    <div>
+                        <h3 id="bankHistoryTitle" class="modal-title">Account History</h3>
+                        <div id="bankHistoryMeta" class="modal-message" style="margin-top: 0.25rem; font-size: 0.8rem; line-height: 1.4;"></div>
+                    </div>
+                    <button type="button" class="sheet-close-btn" onclick="closeBankHistory()"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div id="bankHistoryContent" style="margin: 1rem 0; max-height: 250px; overflow-y: auto;">
+                    <!-- Dynamically populated transaction list -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="modal-btn cancel" onclick="closeBankHistory()">Close</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dialog: Custom Prompt Replacement -->
+        <div id="customModalOverlay" class="modal-overlay">
+            <div class="modal-box">
+                <h3 id="customModalTitle" class="modal-title">Update Value</h3>
+                <p id="customModalMessage" class="modal-message">Please enter new details:</p>
+                <div class="modal-body" style="margin: 1rem 0;">
+                    <input type="text" id="customModalInput" class="modal-input" placeholder="Type here...">
+                </div>
+                <div class="modal-footer">
+                    <button id="customModalCancel" class="modal-btn cancel">Cancel</button>
+                    <button id="customModalOk" class="modal-btn ok">OK</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>
