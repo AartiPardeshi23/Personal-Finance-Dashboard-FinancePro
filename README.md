@@ -124,15 +124,6 @@ npm install
 
 ---
 
-# 🔄 GitHub Repository Setup
-
-## Initialize Git
-
-```bash
-git init
-```
----
-
 # 🤖 GitHub Actions
 
 The project uses GitHub Actions to automatically build an Android APK.
