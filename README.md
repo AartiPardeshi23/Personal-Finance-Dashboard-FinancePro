@@ -131,33 +131,6 @@ npm install
 ```bash
 git init
 ```
-
----
-
-## Add Remote Repository
-
-```bash
-git remote add origin https://github.com/AartiPardeshi23/Personal-Finance-Dashboard-FinancePro.git
-```
-
----
-
-## Commit Project
-
-```bash
-git add .
-git commit -m "Initial App Version"
-```
-
----
-
-## Push to GitHub
-
-```bash
-git branch -M main
-git push -u origin main
-```
-
 ---
 
 # 🤖 GitHub Actions
@@ -257,37 +230,6 @@ Android App
 
 ---
 
-# 📁 .gitignore
-
-```gitignore
-node_modules/
-android/
-ios/
-build/
-dist/
-*.log
-```
-
----
-
-# 📦 package.json
-
-Main Capacitor packages:
-
-```json
-{
-  "dependencies": {
-    "@capacitor/android": "^8.4.1",
-    "@capacitor/core": "^8.4.1"
-  },
-  "devDependencies": {
-    "@capacitor/cli": "^8.4.1"
-  }
-}
-```
-
----
-
 # 📱 App Information
 
 | Property | Value |
@@ -297,37 +239,10 @@ Main Capacitor packages:
 | Framework | HTML, CSS, JavaScript |
 | Mobile Framework | Capacitor |
 | APK Build | GitHub Actions |
-| Repository | Private GitHub Repository |
 
 ---
 
-# 📌 Current APK Type
-
-Current builds generate:
-
-```
-Debug APK
-```
-
-Suitable for:
-
-- Testing
-- Development
-- Internal Distribution
-
----
-
-# 🚀 Future Release APK
-
-When preparing the app for users or the Google Play Store:
-
-- Generate a signing keystore.
-- Store signing credentials securely (preferably as GitHub Secrets).
-- Update the GitHub Actions workflow to produce a signed Release APK or Android App Bundle (AAB).
-- Test the signed build on multiple devices.
-- Publish the Release APK/AAB to the Google Play Console.
-
-Benefits of a Release APK:
+ ### Benefits of a Release APK:
 
 - Smaller application size
 - Better performance
@@ -336,32 +251,6 @@ Benefits of a Release APK:
 - Play Store compatible
 
 ---
-
-# 🔄 Development Workflow
-
-```
-Edit HTML/CSS/JS
-        ↓
-Test Website
-        ↓
-Commit Changes
-        ↓
-Push to GitHub
-        ↓
-GitHub Actions
-        ↓
-Generate APK
-        ↓
-Download APK
-        ↓
-Install on Android
-```
-
----
-
-# 👨‍💻 Author
-
-**Aarti Pardeshi**
 
 Project:
 **FinancePro – Personal Finance Dashboard**
